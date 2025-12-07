@@ -1,0 +1,2569 @@
+{
+  "name": "AI Ad Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Ad Agent",
+        "formDescription": "Enter the requested information for your cinematic ad generation.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Type Of Ad",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Spokesperson"
+                  },
+                  {
+                    "option": "Customer Testimonial"
+                  },
+                  {
+                    "option": "Social Proof"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        340
+      ],
+      "id": "17e64837-fa16-452e-ad08-51e08927b2f2",
+      "name": "On form submission",
+      "webhookId": "7bbd3be9-b747-4cb4-8199-99542a59e96c"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Type Of Ad'] }}",
+                    "rightValue": "Spokesperson",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "Key YOUR_FAL_AI_API_KEY_HERE"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f2fc168-0d4d-4e18-8664-585184132fb0",
+                    "leftValue": "={{ $json['Type Of Ad'] }}",
+                    "rightValue": "Customer Testimonial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "21c1f986-b654-4270-a469-6300c2e0602e",
+                    "leftValue": "={{ $json['Type Of Ad'] }}",
+                    "rightValue": "Social Proof",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1300,
+        340
+      ],
+      "id": "82e80524-8d35-4bc3-95f5-0d153d83698e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the brief description of Character A: '{{ $('Social Proof').item.json['Character A'] }}'. Expand it into a cinematic yet natural visual profile for a conversation-driven advertisement. Include age, ethnicity, facial features, hairstyle, clothing, and subtle expressions that reflect their role (e.g. curious, professional, or casual). Describe posture and body language suitable for dynamic on-camera interaction. Keep it grounded and ad-friendly — this is someone who starts the conversation and drives the exchange. Write 2 polished sentences in third person to guide visual consistency across scenes. Output only the final description."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -240,
+        540
+      ],
+      "id": "7dd8cd34-a182-4ffa-af8e-441fa267a11a",
+      "name": "Create Character3",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a dialogue timing assistant that breaks natural two-person conversations into ~8-second chunks — ideal for cinematic ad scenes.\n\nTake this full conversation (formatted as A: and B: lines) and divide it into the fewest number of segments, each lasting about 8 seconds of spoken content.\n\nYour Objective:\n– Fit as many back-and-forths as possible into each segment without exceeding a natural speaking pace.\n– Only insert a line break when the total spoken content approaches 8 seconds.\n– Do not break after every speaker — keep the flow going if there’s room for another quick response.\n\nRules:\n– Each segment must contain at least one line from both speakers (A and B).\n– You may include more than one A/B exchange per segment.\n– Break only between speaker changes. Never split a speaker’s sentence.\n– Preserve natural pacing and emotional beats — don’t isolate punchlines or reactions.\n– Output each 8-second segment on a new line.\n\nThis is the script:\n{{ $('Social Proof').item.json.Script }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        60,
+        820
+      ],
+      "id": "ff24e311-d97c-4ece-8e24-066dbd97492c",
+      "name": "Create Scripts3",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the setting description: '{{ $('Social Proof').item.json['Environment'] }}'. Expand it into a visually coherent, cinematic environment for a two-person conversation ad. Describe the layout, lighting, tone, and ambiance in a way that fits a natural, face-to-face exchange — like a cozy café table, a quiet co-working lounge, or a scenic park bench. escribe the lighting, general layout, tone, and mood. Mention how it supports the conversation format — e.g., intimate, non-distracting, softly lit. Emphasize realism and composition over dramatic or surreal features. Keep it visually balanced and consistent for all shots — avoid busy details, logos, or objects that could vary. The goal is to ensure visual coherence across multiple shots without calling attention to the background. Write 2–3 vivid yet subtle sentences to guide composition. Output only the description."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -80,
+        680
+      ],
+      "id": "32281486-1fc7-4406-a12b-75060d3ea612",
+      "name": "Create Location3",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1380,
+        340
+      ],
+      "id": "240d1af5-8cad-4dcd-b0b8-3aed90df10f3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key YOUR_FAL_AI_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={ \"prompt\": \"{{ $json.Production.trim() }}\" }\n",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        720
+      ],
+      "id": "ac3c5c19-1d18-408a-8bb1-53a69c357f1b",
+      "name": "Create Video1"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $json.request_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key YOUR_FAL_AI_API_KEY_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        720
+      ],
+      "id": "97b4a954-e643-402e-a2ef-97729c309abb",
+      "name": "Get Video1"
+    },
+    {
+      "parameters": {
+        "amount": 300
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        720
+      ],
+      "id": "6c234b19-1cae-4b50-abe3-a84ba627fc23",
+      "name": "Wait for Veo1",
+      "webhookId": "a7bf329e-b1ca-4f59-b954-d57e551210f6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.shotstack.io/stage/render",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_SHOTSTACK_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2060,
+        -40
+      ],
+      "id": "6afffad9-27a1-49ac-8475-30c9f0bab6f2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "amount": 120
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2300,
+        -40
+      ],
+      "id": "6eff8cc1-f059-444c-984f-90b6a81fda69",
+      "name": "Wait",
+      "webhookId": "6045163e-e216-4c39-ad7f-83a724aacd81"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f7d0e73d-5e12-4a3d-bd0e-5077e959755d",
+              "leftValue": "={{ $json.response.status }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2740,
+        -40
+      ],
+      "id": "1c88fa8f-d8d3-4097-b720-e33d5cc2a40c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f7d0e73d-5e12-4a3d-bd0e-5077e959755d",
+              "leftValue": "={{ $json.response.status }}",
+              "rightValue": "done",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3120,
+        340
+      ],
+      "id": "1452698b-8a87-4e39-ab01-fc3bb594aca2",
+      "name": "If12"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1940,
+        340
+      ],
+      "id": "7679406f-75fc-43c9-9b48-ccb110278beb",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the brief description of Character B: '{{ $('Social Proof').item.json['Character B'] }}'. Expand it into a warm, visually grounded character profile suitable for a cinematic conversation ad. Include age, ethnicity, facial features, hairstyle, clothing, and demeanor. Highlight subtle expressions that make them feel trustworthy and competent — this is the character providing helpful answers or insights. Use approachable language with a slight ad polish. Write 2 clear sentences in third person. Output only the result."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        80,
+        540
+      ],
+      "id": "8aa26d54-8cde-4ae2-a922-504d0b91eec0",
+      "name": "Create Character4",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ad Type Selection and Script Input \n\n",
+        "height": 580,
+        "width": 920,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1580,
+        120
+      ],
+      "id": "41a25d56-cd72-4860-945f-dce09ea40903",
+      "name": "Sticky Note16",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Spokesperson Ad\n\n",
+        "height": 440,
+        "width": 1620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -160
+      ],
+      "id": "6812f082-c08b-4f2a-8bd6-df16c1b03019",
+      "name": "Sticky Note17",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Social Proof Ad\n\n",
+        "height": 440,
+        "width": 1620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        500
+      ],
+      "id": "73ef4f71-720e-4f5b-aa95-e37b807789d9",
+      "name": "Sticky Note18",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Customer Testimonial\n\n",
+        "height": 180,
+        "width": 1620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        300
+      ],
+      "id": "e2dc8f36-713b-420a-811b-8d276f3ad0a8",
+      "name": "Sticky Note19",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Veo3 Video Generation\n\n",
+        "height": 260,
+        "width": 880,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        680
+      ],
+      "id": "bc1d519b-c4ba-48df-931b-bfab267f7300",
+      "name": "Sticky Note20",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Video Rendering without Music\n\n",
+        "height": 360,
+        "width": 1900,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        300
+      ],
+      "id": "612071d3-e2d4-4ef8-b6c5-493acb802338",
+      "name": "Sticky Note21",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Video Rendering with Music\n\n",
+        "height": 360,
+        "width": 1700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -80
+      ],
+      "id": "916b7411-bead-42ec-a407-6b6d267369e3",
+      "name": "Sticky Note22",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Environment",
+              "placeholder": "Describe the location",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Script",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Spokesperson",
+              "placeholder": "45, Male, Professional, suit and tie",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Background Music",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Clean & Corporate - Polished, professional tone. Ideal for premium ads, SaaS, and business content."
+                  },
+                  {
+                    "option": "Cinematic & Emotional - Smooth, cinematic energy with emotional depth. Great for storytelling and brand narratives."
+                  },
+                  {
+                    "option": "Uplifting & Celebratory - Bright and energetic. Perfect for product launches, highlights, or upbeat promos."
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        140
+      ],
+      "id": "66e0eeb2-5394-4b00-889b-11cd2dc2dc8f",
+      "name": "Spokesperson",
+      "webhookId": "bb22cf42-44e9-4f14-bde4-ce78524bed12"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the brief character description: '{{ $('Customer Testimonial').item.json.Customer }}'. Expand it into a realistic visual profile of an everyday customer giving a friendly, personal review. Include age, ethnicity, facial features, hairstyle, casual clothing, posture, and a warm or approachable expression. Use relaxed, ad-friendly language that feels relatable — like someone you'd trust in a YouTube testimonial. Write 2–3 grounded, human sentences to help visually guide the scene. Output only the result, only this descsription in third person."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -240,
+        340
+      ],
+      "id": "ef8b83cd-51bb-42ea-b9f7-3f5646b55a09",
+      "name": "Create Character2",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the following setting description: '{{ $('Customer Testimonial').item.json.Environment }}'. Expand it into a relaxed, everyday environment for a casual customer review. Describe natural lighting, indoor/outdoor layout, background atmosphere, and tone — like a cozy home, a park bench, or a café corner. Keep it visually clear but not overly styled — realism and likability matter more than perfection. Avoid overly dramatic or corporate aesthetics. Avoid specific objects, logos, or architectural elements that might change between scenes. The goal is to ensure visual coherence across multiple shots without calling attention to the background. Write 2–3 warm, human-centered sentences. Output only the result."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        80,
+        340
+      ],
+      "id": "1b478b6a-a724-4357-88fa-a1c29d33de02",
+      "name": "Create Location2",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a voiceover assistant that breaks down casual testimonial-style scripts into natural speaking segments of approximately 8 seconds each — ideal for laid-back video reviews.\nKeep the tone conversational. Combine shorter sentences where it feels natural. Avoid overly polished phrasing. Preserve humor, personality, and pacing.\nYour goal is to divide the given script into the fewest number of chunks possible, each around 8 seconds of spoken content, while preserving natural pauses, sentence flow, and emphasis.\nYour goal is to minimize the number of segments by combining sentences or phrases where appropriate. Aim to **fill each 8-second chunk with as much coherent text as possible** without exceeding typical speaking speed.\nAvoid cutting mid-thought or mid-sentence unless it improves pacing.\nEach segment should be output on a new line.\nOutput only the final segments with no extra commentary.\n⁠\nThis is the Script: {{ $('Customer Testimonial').item.json.Script }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        400,
+        340
+      ],
+      "id": "69f5d4eb-0b5c-441d-94a8-8ee3088cfcc8",
+      "name": "Create Scripts2",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the brief character description: '{{ $('Spokesperson').item.json.Spokesperson }}'. Expand it into a refined, realistic visual profile of a spokesperson suitable for a cinematic advertisement. Include age, ethnicity, facial features, hairstyle, clothing, posture, and a subtle expression that conveys confidence and professionalism. Use polished, ad-friendly language — no exaggeration or fantasy. Write 2–3 elegant sentences to ensure visual consistency across clips. Output only the result."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -240,
+        140
+      ],
+      "id": "293474fa-e3cb-4bba-b94e-6cdb348b0b04",
+      "name": "Create Character1",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Take the following setting description: '{{ $('Spokesperson').item.json.Environment }}'. Expand it into a polished, cinematic environment suitable for a professional video advertisement. Describe key visual elements like layout, lighting, atmosphere, and brand-appropriate tone (modern, sleek, minimal, etc.). Emphasize realism and composition over dramatic or surreal features. Avoid specific objects, logos, or architectural elements that might change between scenes. The goal is to ensure visual coherence across multiple shots without calling attention to the background. Write 2–3 coherent, visually grounded sentences. Output only the result."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "8e1088ac-c1ab-45a4-9951-2bef6763a71c",
+      "name": "Create Location1",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a voiceover assistant that breaks down scripts into natural speaking segments of approximately 8 seconds each — ideal for narration in professional video ads.\nYour goal is to divide the given script into the fewest number of chunks possible, each around 8 seconds of spoken content, while preserving natural pauses, sentence flow, and emphasis.\nYour goal is to minimize the number of segments by combining sentences or phrases where appropriate. Aim to **fill each 8-second chunk with as much coherent text as possible** without exceeding typical speaking speed.\nAvoid cutting mid-thought or mid-sentence unless it improves pacing.\nEach segment should be output on a new line.\nOutput only the final segments with no extra commentary.\n⁠\nScript: {{ $('Spokesperson').item.json.Script }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        60,
+        -140
+      ],
+      "id": "05fd5b64-9cd2-44f3-91e2-862c7fdc73de",
+      "name": "Create Scripts1",
+      "credentials": {
+        "openAiApi": {
+          "id": "YxBJMiTiXmUB8kHg",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input text\nconst text = $input.first().json.message.content;\n\n// Split into sections wherever there's a new line\nconst lines = text\n  .split('\\n')\n  .map(line => line.trim())\n  .filter(line => line.length > 0);\n\n// Return each line with an Index field\nreturn lines.map((line, index) => ({\n  json: {\n    paragraph: line,\n    Index: index\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        680
+      ],
+      "id": "a22c5a84-ed9f-471b-9146-98da1dd577c8",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input text\nconst text = $input.first().json.message.content;\n\n// Split into sections wherever there's a new line\nconst lines = text\n  .split('\\n')\n  .map(line => line.trim())\n  .filter(line => line.length > 0);\n\n// Return each line as a separate item, adding an Index field\nreturn lines.map((line, index) => ({\n  json: {\n    paragraph: line,\n    Index: index\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        340
+      ],
+      "id": "e1a54f36-093d-4a5b-b653-e3d25cf0b701",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input text\nconst text = $input.first().json.message.content;\n// Split into sections wherever there's a new line\nconst lines = text.split('\\n').map(line => line.trim()).filter(line => line.length > 0);\nreturn lines.map(line => ({ json: { paragraph: line } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -20
+      ],
+      "id": "dd75e9a6-2474-47a4-8358-f5316d46f80e",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "={{ $('On form submission').item.json['Type Of Ad'] }}",
+            "Environment": "={{ $json['Environment'] }}",
+            "Script": "={{ $json['Script'] }}",
+            "Spokesperson": "={{ $json['Spokesperson'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -480,
+        540
+      ],
+      "id": "71b5d2ec-a0e2-43b9-aa8e-85fbc9cd0d8e",
+      "name": "Log the Idea3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "={{ $('On form submission').item.json['Type Of Ad'] }}",
+            "Environment": "={{ $json['Environment'] }}",
+            "Script": "={{ $json['Script'] }}",
+            "Spokesperson": "={{ $json['Customer'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -480,
+        340
+      ],
+      "id": "c124ae78-789c-43f4-a47c-36deb8d3c85e",
+      "name": "Log the Idea2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "={{ $('On form submission').item.json['Type Of Ad'] }}",
+            "Environment": "={{ $json['Environment'] }}",
+            "Script": "={{ $json['Script'] }}",
+            "Spokesperson": "={{ $json['Spokesperson'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -480,
+        140
+      ],
+      "id": "db66668c-3939-49dd-b334-8fe03d2017b8",
+      "name": "Log the Idea1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "=",
+            "Environment": "=",
+            "Script": "=",
+            "Spokesperson": "=",
+            "Production": "=A professional cinematic scene showing Robin — ({{ $('Create Character1').item.json.message.content }}) — delivering an on-air announcement: {{ $('Code1').item.json.paragraph }} . If the scene has less than 8 seconds of speaking content, end it with 2–3 seconds of calm camera-facing presence — Robin should maintain eye contact, hold a confident expression, and avoid unnecessary movement. The scene takes place in a consistent, brand-aligned setting, which doesn´t change: {{ $('Create Location1').item.json.message.content }}. Use a consistent style, lighting, and camera angle to match previous shots. Avoid including detailed props or background elements that may vary between shots. Maintain ad-quality composition and pacing. The scene should be clean and cinematic. NO subtitles, no text, no captions."
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        920,
+        140
+      ],
+      "id": "0cdc644b-8475-43f2-870b-0527bcc7d991",
+      "name": "Log the Idea4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "=",
+            "Environment": "=",
+            "Script": "=",
+            "Spokesperson": "=",
+            "Production": "=A casual video scene showing Robin — ({{ $('Create Character2').item.json.message.content }}) — giving a friendly on-camera review: {{ \n  $('Customer Testimonial').item.json['Question from the Off'] && \n  $('Customer Testimonial').item.json['Question from the Off'].trim() !== \"\" && \n  $json.Index === 0 \n    ? \"Important: A friendly male voice from behind the camera asks: \" + \n      $('Customer Testimonial').item.json['Question from the Off'] + \n      \"And Robin responds to the voice: \" \n    : \"\" \n}} {{ $('Code2').item.json.paragraph }}. Robin is relaxed, natural, and speaking with warmth and honesty, authentic — maybe smiling or chuckling. The scene takes place in a calm, everyday environment, which doesn´t change: {{ $('Create Location2').item.json.message.content }}. Use a consistent, realistic style, lighting, and camera angle to match previous shots. Avoid including detailed props or background elements that may vary between shots. No overlays, no subtitles, no text, no logos. If the paragraph is short, end with 2–3 seconds of Robin staying quite warmly or casually — pausing with a content look. Keep the camera work simple and intimate — as if a friend is filming them on a nice day. \n"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        920,
+        340
+      ],
+      "id": "9bf42fb4-1360-4102-9c0d-476c4519bdb6",
+      "name": "Log the Idea5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "=",
+            "Environment": "=",
+            "Script": "=",
+            "Spokesperson": "=",
+            "Production": "=A cinematic conversation scene featuring two people: Speaker A —  {{ $('Create Character3').item.json.message.content }} Speaker B — {{ $('Create Character4').item.json.message.content }} The scene is set in the following consistent setting, which doesn´t change:{{ $('Create Location3').item.json.message.content }} This scene captures the following moment in their dialogue: {{ $('Code3').item.json.paragraph }} Use Camera {{ $json.Index % 2 === 0 ? 'A' : 'B' }} — {{ $json.Index % 2 === 0 \n  ? \"favor Speaker A with a slightly closer, over-the-shoulder or angled shot, but keep both visible and clearly in frame.\" \n  : \"favor Speaker B with a slightly closer, reversed camera angle, but keep both visible and clearly in frame.\" }} Keep lighting, environment, and shot composition consistent with previous scenes. Avoid visible text, logos, or props that might vary. If the dialogue is short, end with 2–3 seconds of a natural pause — one speaker should appear thoughtful, the other responsive or observant. Style should be cinematic, realistic, and ad-quality. No subtitles or overlays.\n"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        920,
+        540
+      ],
+      "id": "35c60fb4-f843-433a-8f14-349a4023c77c",
+      "name": "Log the Idea6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Question from the Off",
+              "fieldType": "textarea",
+              "placeholder": "Question to the Customer (Optional)"
+            },
+            {
+              "fieldLabel": "Environment",
+              "placeholder": "Describe the location",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Script",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Customer",
+              "placeholder": "24, female, holiday wear, enthusiastic",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Background Music",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Clean & Corporate - Polished, professional tone. Ideal for premium ads, SaaS, and business content."
+                  },
+                  {
+                    "option": "Cinematic & Emotional - Smooth, cinematic energy with emotional depth. Great for storytelling and brand narratives."
+                  },
+                  {
+                    "option": "Uplifting & Celebratory - Bright and energetic. Perfect for product launches, highlights, or upbeat promos."
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        340
+      ],
+      "id": "a0feeb8c-be6e-4877-99a4-46a8a23e36f7",
+      "name": "Customer Testimonial",
+      "webhookId": "bb22cf42-44e9-4f14-bde4-ce78524bed12"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Environment",
+              "placeholder": "Describe the location",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Script",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Character A",
+              "placeholder": "45, Male, Professional, Suit and Tie",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Character B",
+              "placeholder": "25, Female, sociable, wearing a comfortable hoodie",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Background Music",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Clean & Corporate - Polished, professional tone. Ideal for premium ads, SaaS, and business content."
+                  },
+                  {
+                    "option": "Cinematic & Emotional - Smooth, cinematic energy with emotional depth. Great for storytelling and brand narratives."
+                  },
+                  {
+                    "option": "Uplifting & Celebratory - Bright and energetic. Perfect for product launches, highlights, or upbeat promos."
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        540
+      ],
+      "id": "eb863c80-f284-4160-b543-3198ebc9ca7d",
+      "name": "Social Proof",
+      "webhookId": "bb22cf42-44e9-4f14-bde4-ce78524bed12"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst inputData = $input.all();\n\nconst clipUrls = inputData.map(item => item.json.video?.url).filter(Boolean);\n\nconst selectedMusic = input['Background Music'];\n\n\n// Set music URL based on selection\nlet musicSrc = \"\";\n\nif (selectedMusic === \"Clean & Corporate - Polished, professional tone. Ideal for premium ads, SaaS, and business content.\") {\n  musicSrc = \"https://shotstack-assets.s3-ap-southeast-2.amazonaws.com/music/freepd/advertising.mp3\";\n  \n} else if (selectedMusic === \"Cinematic & Emotional - Smooth, cinematic energy with emotional depth. Great for storytelling and brand narratives.\") {\n  musicSrc = \"https://shotstack-assets.s3-ap-southeast-2.amazonaws.com/music/freepd/motions.mp3\";\n  \n} else if (selectedMusic === \"Uplifting & Celebratory - Bright and energetic. Perfect for product launches, highlights, or upbeat promos.\") {\n  musicSrc = \"https://shotstack-assets.s3-ap-southeast-2.amazonaws.com/music/freepd/fireworks.mp3\";\n  \n} else {\n  // fallback default\n  musicSrc = \"https://shotstack-assets.s3-ap-southeast-2.amazonaws.com/music/freepd/advertising.mp3\";\n}\n\n\nconst timeline = {\n  \n  soundtrack: {\n\nsrc: musicSrc,\n    \n\n    effect: \"fadeOut\", // optional: fades out music at the end\n    volume: 0.3,\n  },\n  tracks: [\n    {\n      clips: clipUrls.map((url, index) => ({\n        asset: {\n          type: \"video\",\n          src: url,\n        },\n        start: index * 7.5,\n        length: 8,\n        transition: {\n          ...(index !== 0 && { in: \"fade\" }),  // only add fade in if not first\n          out: \"fade\"\n        },\n          effect: \"zoomInSlow\"\n      })),\n    },\n  ],\n};\n\n\n\nreturn [\n  {\n    json: {\n      timeline,\n      output: {\n        format: \"mp4\",\n        resolution: \"hd\"\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        -40
+      ],
+      "id": "6aeed12f-8adc-458f-8c9a-c342ef3c94a4",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "jsCode": "//const input = $input.first().json;\nconst inputData = $input.all();\n\nconst clipUrls = inputData.map(item => item.json.video?.url).filter(Boolean);\n\n\n\n\n\nconst timeline = {\n  \n  \n  tracks: [\n    {\n      clips: clipUrls.map((url, index) => ({\n        asset: {\n          type: \"video\",\n          src: url,\n        },\n        start: index * 7.5,\n        length: 8,\n        transition: {\n          ...(index !== 0 && { in: \"fade\" }),  // only add fade in if not first\n          out: \"fade\"\n        },\n          effect: \"zoomInSlow\"\n      })),\n    },\n  ],\n};\n\n\n\nreturn [\n  {\n    json: {\n      timeline,\n      output: {\n        format: \"mp4\",\n        resolution: \"hd\"\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2180,
+        340
+      ],
+      "id": "c9ef1e8e-f13b-4a32-9809-280589ca203c",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "=",
+            "Environment": "=",
+            "Script": "=",
+            "Spokesperson": "=",
+            "Production": "=with music",
+            "FinalVideoURL": "={{ $json.response.url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3160,
+        -40
+      ],
+      "id": "ef06b505-3769-49b2-8ead-cf8535a76efd",
+      "name": "Log the Idea7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "==ROW()-1",
+            "TypeOfAd": "=",
+            "Environment": "=",
+            "Script": "=",
+            "Spokesperson": "=",
+            "Production": "=without music",
+            "FinalVideoURL": "={{ $json.response.url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TypeOfAd",
+              "displayName": "TypeOfAd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Environment",
+              "displayName": "Environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Script",
+              "displayName": "Script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spokesperson",
+              "displayName": "Spokesperson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Production",
+              "displayName": "Production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FinalVideoURL",
+              "displayName": "FinalVideoURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3540,
+        340
+      ],
+      "id": "6b1f26a3-6797-4531-9e49-24e470f7859a",
+      "name": "Log the Idea8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NZgrr9eNwWBm2HLb",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shotstack.io/stage/render/{{ $json.response.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_SHOTSTACK_API_KEY_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2520,
+        -40
+      ],
+      "id": "8bf20c2f-0a2d-4405-8e63-6fd8c707a71e",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.shotstack.io/stage/render",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_SHOTSTACK_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        340
+      ],
+      "id": "9bc08ff8-5625-444f-89fb-2186d7e94d56",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shotstack.io/stage/render/{{ $json.response.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_SHOTSTACK_API_KEY_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2900,
+        340
+      ],
+      "id": "00029d10-4adf-42f2-9083-3ae8f7656494",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2940,
+        60
+      ],
+      "id": "0859269a-11e2-4493-bc4e-43ad737f0f08",
+      "name": "Wait2",
+      "webhookId": "6045163e-e216-4c39-ad7f-83a724aacd81"
+    },
+    {
+      "parameters": {
+        "amount": 120
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2660,
+        340
+      ],
+      "id": "f6e3f55f-8ca7-41d2-827a-f52dac992af3",
+      "name": "Wait3",
+      "webhookId": "6045163e-e216-4c39-ad7f-83a724aacd81"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3320,
+        460
+      ],
+      "id": "38c9ad96-ed1b-475d-9e67-e72c1191d0ce",
+      "name": "Wait4",
+      "webhookId": "6045163e-e216-4c39-ad7f-83a724aacd81"
+    },
+    {
+      "parameters": {
+        "content": "# AI Ad Agent Deployment Guide\n## Build Cinematic Ads. No Team. No Editing. Just Leverage.\n\nThis system is plug-and-deploy. No tech skills. 20 minutes to launch.\nReplace a $100K ad team — with infrastructure.\n\n\n---\n\n## 🔳 Step 1: Set Up OpenAI for Scripting  \n1. Go to [OpenAI API Platform](https://platform.openai.com/api-keys)  \n2. Create an account/ Sign in and generate your API key\n3. In n8n, go to Credentials → OpenAI Chat → Add your key\n\nDone. Your system now writes like a strategist.  \n\n---\n\n## 🔳 Step 2: Connect to Veo3 via Fal.ai (for Cinematic Video Generation)\n1. Go to [Fal AI](https://fal.ai) and create an account/sign in  \n2. Generate your API key  \n3.  Add your Fal.ai key as a Header Auth credential\n4. Apply this credential to the Veo3 nodes in the workflow\n\nNo prompting. No guesswork. AI handles the visuals.\n\n---\n\n## 🔳 Step 3: Enable Google Sheet Logging  \n1. Make a copy of the [AI Equity Sheet Template](https://docs.google.com/spreadsheets/d/1TsNBdnvAsW415bkgNrb6_jO1zOwUu6psj2GpVXaA-zc/edit?usp=sharing) provided.  \n2. Connect it in n8n using the Google Sheets node  \n3. Use it to log campaigns, client projects, or system outputs\n\nThis is how you scale — track and sell outputs like assets.\n\nComprehensive Set-Up Guide included with download files.\n\nExecute workflow.\n\n## ⏱️ Setup Time: 20 Minutes",
+        "height": 1160,
+        "width": 420,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2220,
+        -160
+      ],
+      "id": "a5e931a9-bba4-4154-9b37-681188bdeaa7",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Spokesperson",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Customer Testimonial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Social Proof",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Character3": {
+      "main": [
+        [
+          {
+            "node": "Create Character4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Scripts3": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Location3": {
+      "main": [
+        [
+          {
+            "node": "Create Scripts3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video1": {
+      "main": [
+        [
+          {
+            "node": "Wait for Veo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Veo1": {
+      "main": [
+        [
+          {
+            "node": "Get Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If12": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Character4": {
+      "main": [
+        [
+          {
+            "node": "Create Location3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spokesperson": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Character2": {
+      "main": [
+        [
+          {
+            "node": "Create Location2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Location2": {
+      "main": [
+        [
+          {
+            "node": "Create Scripts2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Scripts2": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Character1": {
+      "main": [
+        [
+          {
+            "node": "Create Location1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Location1": {
+      "main": [
+        [
+          {
+            "node": "Create Scripts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Scripts1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea3": {
+      "main": [
+        [
+          {
+            "node": "Create Character3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea2": {
+      "main": [
+        [
+          {
+            "node": "Create Character2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea1": {
+      "main": [
+        [
+          {
+            "node": "Create Character1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea6": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Testimonial": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Proof": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea7": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "If12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e6c54f85-cab0-4394-aa6a-0777e9ff821d",
+  "meta": {
+    "instanceId": "70f5e4643c01ee573b7da2f344d6c16f6bbcaf4f00a30a17a4fcb923305394fe"
+  },
+  "id": "5AAFoA2kL7yl0s2b",
+  "tags": []
+}
