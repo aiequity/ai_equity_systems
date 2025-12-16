@@ -6,7 +6,8 @@ for an AI-powered video ad generation pipeline.
 ## Contents
 - n8n workflow JSON
 - Setup guide
-- Usage notes
+- User guide
+- Ad examples
 
 ## Notes
 - This workflow is shared for educational and experimentation purposes.
